@@ -10,7 +10,7 @@ This tool helps you refactor test suites by:
 - Removing equivalent tests from one file while maintaining exact formatting using LibCST
 - Generating a cleaned version of your test file
 
-Perfect for consolidating test suites, removing redundant tests, or merging test files.
+Perfect for consolidating test suites, removing redundant tests, or merging test files. The typical use case is moving tests from one script to another.
 
 ## Installation
 
