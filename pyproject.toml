@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "refactor-toolbox"
+version = "0.1.0"
+description = "A test refactoring toolbox."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "libcst"
+]
+authors = [
+    {name = "Edoardo Balzani", email = "ebalzani87@gmail.com"}
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = [
+    "libcst",
+]
+
+#[project.scripts]
+#naturalization-quiz = "naturalization_quiz.quiz:main"
+
+#[project.urls]
+#Homepage = "https://github.com/BalzaniEdoardo/naturalization_quiz"
