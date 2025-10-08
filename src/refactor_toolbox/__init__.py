@@ -1,1 +1,1 @@
-from .test_refactor_toolbox import TestExtractor, TestRemover, extract_tests, format_test_for_display
+from .test_deduplicator import TestExtractor, TestRemover, extract_tests, format_test_for_display

@@ -5,28 +5,41 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "refactor-toolbox"
 version = "0.1.0"
-description = "A test refactoring toolbox."
+description = "A test refactoring toolbox for deduplicating and cleaning test files."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "libcst"
+    "libcst>=1.0.0"
 ]
 authors = [
     {name = "Edoardo Balzani", email = "ebalzani87@gmail.com"}
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Code Generators",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "libcst",
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
 ]
 
-#[project.scripts]
-#naturalization-quiz = "naturalization_quiz.quiz:main"
+[project.scripts]
+test-dedup = "refactor_toolbox.test_deduplicator:main"
 
-#[project.urls]
-#Homepage = "https://github.com/BalzaniEdoardo/naturalization_quiz"
+[project.urls]
+Homepage = "https://github.com/BalzaniEdoardo/refactor-toolbox"
+Repository = "https://github.com/BalzaniEdoardo/refactor-toolbox"
+Issues = "https://github.com/BalzaniEdoardo/refactor-toolbox/issues"

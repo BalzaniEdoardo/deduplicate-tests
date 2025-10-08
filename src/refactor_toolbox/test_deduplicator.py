@@ -5,8 +5,10 @@ Preserves all formatting and whitespace.
 """
 
 import libcst as cst
-from typing import Dict, List, Set
+from typing import Dict, Set
 import sys
+import argparse
+from pathlib import Path
 
 
 class TestExtractor(cst.CSTVisitor):
@@ -40,6 +42,7 @@ def format_test_for_display(test_node: cst.FunctionDef) -> str:
     wrapper = cst.Module(body=[test_node])
     return wrapper.code
 
+
 def compare_tests_interactive(tests1: Dict[str, cst.FunctionDef],
                               tests2: Dict[str, cst.FunctionDef],
                               file1_name: str,
@@ -52,7 +55,6 @@ def compare_tests_interactive(tests1: Dict[str, cst.FunctionDef],
 
     # Find common test names
     common_tests = set(tests1.keys()) & set(tests2.keys())
-
 
     if not common_tests:
         print("No common test names found between the two files.")
@@ -131,16 +133,61 @@ def remove_tests_from_file(file_path: str,
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python script.py <file1.py> <file2.py>")
-        print("\nThis will:")
-        print("  1. Extract all test_* functions from both files")
-        print("  2. Compare them interactively")
-        print("  3. Remove equivalent tests from file1 and save to file1_cleaned.py")
+    parser = argparse.ArgumentParser(
+        description="Extract, compare, and remove equivalent test functions while preserving formatting.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Example workflow:
+  1. Commit your repo containing the tests
+  2. Run: test-dedup file1.py file2.py
+  3. Compare cleaned file with original using git diff or PyCharm
+  4. If satisfied, replace original with cleaned version
+  5. Commit the changes
+
+Examples:
+  test-dedup tests/test_api.py tests/test_legacy.py
+  test-dedup tests/old.py tests/new.py -o tests/consolidated.py
+        """
+    )
+
+    parser.add_argument(
+        'file1',
+        type=str,
+        help='First Python file containing test functions (will be cleaned)'
+    )
+
+    parser.add_argument(
+        'file2',
+        type=str,
+        help='Second Python file to compare against'
+    )
+
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        default=None,
+        help='Output file path (default: <file1>_cleaned.py)'
+    )
+
+    parser.add_argument(
+        '-v', '--version',
+        action='version',
+        version='%(prog)s 0.1.0'
+    )
+
+    args = parser.parse_args()
+
+    file1 = args.file1
+    file2 = args.file2
+
+    # Validate files exist
+    if not Path(file1).exists():
+        print(f"Error: File not found: {file1}", file=sys.stderr)
         sys.exit(1)
 
-    file1 = sys.argv[1]
-    file2 = sys.argv[2]
+    if not Path(file2).exists():
+        print(f"Error: File not found: {file2}", file=sys.stderr)
+        sys.exit(1)
 
     print(f"Extracting tests from {file1}...")
     tests1 = extract_tests(file1)
@@ -163,15 +210,22 @@ def main():
         print(f"  - {test_name}")
 
     # Task 2: Remove equivalent tests from file1
-    output_file = file1.replace('.py', '_cleaned.py')
-    if output_file == file1:
-        output_file = file1 + '.cleaned'
+    output_file = args.output
+    if output_file is None:
+        output_file = file1.replace('.py', '_cleaned.py')
+        if output_file == file1:
+            output_file = file1 + '.cleaned'
 
     print("\n" + "=" * 80)
     print(f"TASK 2: Removing equivalent tests from {file1}")
     remove_tests_from_file(file1, tests_to_be_removed, output_file)
 
-    print("\nDone! ✨")
+    print("\n✨ Done!")
+    print(f"\nNext steps:")
+    print(f"  1. Review changes: git diff {file1} {output_file}")
+    print(f"     Or use PyCharm: Right-click → Compare With...")
+    print(f"  2. If satisfied: cp {output_file} {file1}")
+    print(f"  3. Commit: git add {file1} && git commit -m 'Remove duplicate tests'")
 
 
 if __name__ == "__main__":
